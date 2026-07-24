@@ -44,7 +44,7 @@ BT 모듈 ──── UART ──────────────►  BT �
                                       │
                           ┌───────────┼───────────┐
                           ▼           ▼            ▼
-                    PID 제어      MPU-6050      TFT LCD
+                    PID 제어       ADXL345      TFT LCD
                     (PWM Duty)    (I2C, IMU)    (SPI)
                           │
                           ▼
