@@ -138,7 +138,6 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim2);        // TIM2 Update 인터럽트 시작 (IMU)
   HAL_TIM_Base_Start_IT(&htim3);        // TIM3 Update 인터럽트 시작 (UART)
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);  // TIM3 Channel1 Input Capture 시작 (초음파)
-  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);  // TIM3 Channel1 Input Capture 
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // TIM4 PWM 
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // TIM4 PWM 
 
