@@ -1,92 +1,76 @@
-# STM32-Joystick-RC-Car
+# STM32 RC Car with Joystick and Sensors
 
 ## 소개
 
-STM32F411RE(Nucleo) 보드를 기반으로 제작한 RC카 프로젝트입니다.
-단순 PWM 출력을 통한 모터 제어가 아니라, **PWM Duty를 제어 변수로 하는 PID 제어**를 적용하여
-모터의 정밀한 RPM 제어를 구현했습니다. 조이스틱 기반 무선 조종기(BT)로 차량을 제어하며,
-IMU 센서를 통한 자세 데이터 수집과 TFT LCD를 통한 실시간 상태 표시 기능을 포함합니다.
+이 프로젝트는 STM32F411RE Nucleo 보드를 기반으로 한 RC 자동차 제어 시스템입니다.
+PWM 제어와 PID 기법을 활용해 모터 속도를 안정적으로 제어하고, 조이스틱 입력과 센서 데이터를 연동하여 차량을 제어할 수 있도록 구성했습니다.
 
 ## 주요 기능
 
-- **PID 기반 모터 속도 제어**
-  PWM Duty Cycle을 PID 제어 변수로 사용하여 목표 RPM을 정밀하게 추종합니다. 단순 Open-loop PWM 제어 대비 부하 변화에도 안정적인 속도를 유지합니다.
+- PID 기반 모터 속도 제어
+  - PWM Duty Cycle을 제어 변수로 사용하여 목표 RPM에 가깝게 따라가도록 구현했습니다.
+- 조이스틱 기반 원격 제어
+  - Bluetooth UART 통신을 통해 조이스틱 입력값을 수신하고, 차량의 조향 및 속도 명령으로 변환합니다.
+- IMU 센서 연동
+  - ADXL345를 이용해 가속도/자세 정보를 수집합니다.
+- 초음파 거리 측정
+  - HC-SR04 센서를 사용해 장애물 거리를 측정합니다.
+- 조도 센서 및 LED 제어
+  - 조도 변화에 따라 LED 밝기를 조절하는 기능을 포함합니다.
+- 실시간 상태 표시
+  - TFT LCD를 통해 제어 상태와 센서 정보를 표시합니다.
 
-- **조이스틱 기반 무선 조종**
-  별도 제작한 BT(Bluetooth) 조종기에서 조이스틱 입력값을 UART로 송신하고, 수신부(RC카)에서 조향/속도 명령으로 변환하여 모터 제어에 반영합니다.
+## 사용 하드웨어
 
-- **IMU 센서 연동 (ADXL345)**
-  I2C 통신으로 자세/가속도 데이터를 수집하여 차량 상태 모니터링 및 제어 보정에 활용합니다.
+- MCU: STM32F411RE (Nucleo-64)
+- 모터 제어: PWM 기반 DC 모터 제어
+- 통신: UART, I2C, SPI
+- 센서:
+  - ADXL345 (IMU)
+  - HC-SR04 (초음파 거리 센서)
+  - 조도 센서
+- 디스플레이: 2.2-inch QVGA TFT LCD
 
-- **TFT LCD 상태 디스플레이**
-  2.2인치 QVGA(240x320) SPI TFT LCD를 통해 실시간 속도, 제어 상태 등을 시각적으로 출력합니다.
+## 개발 환경
 
-## 기술 스택
+- 언어: C
+- 빌드 도구: CMake
+- IDE: STM32CubeIDE / STM32CubeMX
+- 툴체인: ARM GCC
 
-- **MCU**: STM32F411RE (Nucleo-64)
-- **언어**: C
-- **통신 프로토콜**
-  - UART — BT 모듈을 이용한 조이스틱 조종기 데이터 통신
-  - I2C — IMU 센서(ADXL345) 데이터 수집
-  - SPI — TFT LCD 디스플레이 출력
-- **제어**: PID 제어 기반 PWM Duty 제어 (모터 RPM 정밀 제어)
-- **디스플레이**: 2.2" QVGA TFT LCD (240x320, SPI)
-- **개발 환경**: STM32CubeIDE, STM32CubeMX
+## 프로젝트 구성
 
-## 시스템 구성도
+- Core/Inc: 헤더 파일
+- Core/Src: 메인 제어 로직 및 센서/모터 제어 구현
+- Drivers: STM32 HAL 및 CMSIS 드라이버
 
+## 실행 방법
+
+### 1. 저장소 클론
+
+```bash
+git clone https://github.com/heeyeon5877-tech/Lcd_RC_Car_With_STM32.git
+cd MiniP
 ```
-[조종기]                          [RC카]
-조이스틱 입력                     STM32F411RE
-   │                                 │
-   ▼                                 │
-BT 모듈 ──── UART ──────────────►  BT 모듈
-                                      │
-                          ┌───────────┼───────────┐
-                          ▼           ▼            ▼
-                    PID 제어      MPU-6050      TFT LCD
-                    (PWM Duty)    (I2C, IMU)    (SPI)
-                          │
-                          ▼
-                       DC 모터
-```
+
+### 2. 빌드
+
+STM32CubeIDE 또는 CMake 기반 환경에서 프로젝트를 빌드할 수 있습니다.
+
+### 3. 보드 업로드
+
+ST-Link를 이용해 STM32F411RE 보드에 펌웨어를 업로드합니다.
+
+### 4. 동작 확인
+
+- 조이스틱 입력에 따라 차량의 방향과 속도가 변하는지 확인합니다.
+- LCD 화면에서 센서 값과 제어 상태를 확인합니다.
 
 ## 팀원
 
 | 이름 | 역할 |
 |------|------|
-| 변정제 | BT 모듈을 이용한 조이스틱 조종기 데이터 통신 |
+| 변정제 | Bluetooth 조종기 및 UART 통신 |
 | 김소정 | TFT LCD 디스플레이 제어 |
-| 오은지 | PID 제어 기반 PWM Duty 제어 (모터 RPM 정밀 제어)|
-| 박희연 | IMU 센서 & 초음파 센서, 조도센서 & LED |
-
-## 실행 방법
-
-### 1. 개발 환경 설정
-
-1. [STM32CubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html) 설치
-2. 본 저장소 클론
-   ```bash
-   git clone https://github.com/사용자명/저장소명.git
-   ```
-3. STM32CubeIDE에서 프로젝트 Import
-
-### 2. 하드웨어 연결
-
-| 모듈 | 통신 방식 | 비고 |
-|------|-----------|------|
-| BT 모듈 | UART | 조이스틱 조종기 데이터 수신 |
-| ADXL345 | I2C | IMU 자세/가속도 센서 |
-| TFT LCD (2.2" QVGA 240x320) | SPI | 상태 디스플레이 |
-| DC 모터 | PWM | PID 제어 기반 속도 제어 |
-
-### 3. 빌드 및 업로드
-
-1. STM32CubeIDE에서 프로젝트 Build
-2. ST-Link를 통해 STM32F411RE 보드에 Flash
-3. 조종기 BT 모듈과 페어링 후 조이스틱으로 제어
-
-### 4. 동작 확인
-
-- LCD 화면에서 실시간 속도 및 제어 상태 확인
-- 조이스틱 입력에 따른 조향/속도 반응 확인
+| 오은지 | PID 제어 기반 모터 제어 |
+| 박희연 | IMU, 초음파 센서, 조도 센서 및 LED 제어 |

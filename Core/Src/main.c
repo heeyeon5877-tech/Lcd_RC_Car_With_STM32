@@ -185,6 +185,9 @@ int main(void)
         printf(">distance_raw:%lu\r\n", pulse_width);
         /* 20cm 이내 장애물 감지 여부 출력 (1: 감지, 0: 비감지) */
         printf(">obstacle:%d\r\n", obstacle_detected);
+
+        /* LDR ADC 평균값 출력 */
+        printf(">ldr_adc:%lu\r\n", average_adc_value);
     }
     /* USER CODE END WHILE */
 
