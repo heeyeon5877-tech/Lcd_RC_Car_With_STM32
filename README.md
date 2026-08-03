@@ -20,6 +20,7 @@
 - [소프트웨어 구조](#소프트웨어-구조)
 - [주요 기능 구현](#주요-기능-구현)
 - [트러블슈팅](#트러블슈팅)
+- [시연 영상](#시연-영상)
 - [결과 및 회고](#결과-및-회고)
 - [향후 과제](#향후-과제)
 - [실행 방법](#실행-방법)
@@ -104,11 +105,15 @@ Car 보드는 수신 링버퍼에서 `0xAA 0x55` 시작 시퀀스를 탐색해 9
 
 ### Car (2WD 구동부 + 센서·디스플레이 통합)
 
+<img src="images/hardware_rc_car.jpg" alt="RC카 하드웨어 상판" width="500">
+
 2단 아크릴 섀시에 좌/우 DC 모터와 엔코더를 장착하고, 모터 드라이버를 통해 TIM4 PWM 신호로 속도를, 방향 GPIO로 정·역전을 제어합니다. 전면 하단에는 HC-SR04 초음파 센서를 배치해 진행 방향의 장애물을 감지하고, 상단 중앙의 ILI9341 TFT LCD가 IMU 기울기에 반응하는 캐릭터를 표시합니다.
 
 STM32F411RE Nucleo 보드를 중심으로 브레드보드에서 모터 드라이버·ADXL345 IMU·초음파 센서 배선을 분기하였고, 블루투스 모듈을 UART에 연결해 조종기로부터 제어 패킷을 무선 수신합니다.
 
 ### Controller
+
+<img src="images/hardware_controller.jpg" alt="컨트롤러 하드웨어" width="500">
 
 만능기판 위에 STM32F411RE Nucleo 보드와 2축 아날로그 조이스틱, LED 제어용 푸시버튼을 배치하여, 조이스틱 X/Y 값을 ADC로 읽어 전후진·회전 명령으로 변환합니다. AA 건전지 홀더로 독립 전원을 구성해 PC 연결 없이 동작하며, 블루투스 모듈을 UART에 연결해 100ms 주기로 제어 패킷을 무선 송신합니다.
 
@@ -191,6 +196,12 @@ LDR(×2)로 주변 밝기를 ADC로 측정하고(`4095 - adc_avg`로 반전 처�
 | OV7670 I2C Bus Busy (SDA Low 고정) | I2C 통신 시도 시 SDA가 Low로 고정되어 버스가 풀리지 않음 | 이전 통신이 비정상 종료되며 슬레이브가 클럭 도중 SDA를 Low로 잡은 채 멈춤 | Bus Recovery 절차 수행(SCL을 GPIO로 전환해 수동 클럭 펄스 인가 → STOP 조건 생성 후 I2C 재초기화) | 초기화 루틴에 Bus Recovery 절차를 기본 포함해두는 것이 안전함 |
 | OV7670 HAL_I2C_Mem_Read() 타임아웃 | `HAL_I2C_Mem_Read()` 사용 시 `HAL_ERROR`(Timeout) | `IsDeviceReady()`로 주소 응답은 정상 확인 → OV7670의 레지스터 Read 방식과 `Mem_Read()` 동작이 맞지 않음 | `Master_Transmit()`으로 레지스터 주소 전송 후 `Master_Receive()`로 데이터 수신하는 방식으로 대체 | HAL API가 모든 모듈의 통신 방식에 적합한 것은 아니며, 모듈의 통신 프로토콜을 이해하고 적절한 API를 선택해야 함 |
 
+## 시연 영상
+
+<img src="images/demo_video.jpg" alt="시연 영상 - 조이스틱 컨트롤로 직진 및 회전" width="360">
+
+*조이스틱 컨트롤로 직진 및 회전*
+
 ## 결과 및 회고
 
 **초기 목표 기능 구현 완료**
@@ -207,6 +218,10 @@ SD카드 배선 미스, LCD MISO 플로팅, CS 핀 충돌 사례처럼 이번 �
 **미완 과제: OV7670 카메라 & SD카드 영상 저장**
 
 추가 기능으로 계획했던 카메라 모듈 연동과 SD카드 영상 저장은 기간 내 완성하지 못해 최종 시스템에서 제외했습니다. I2C Bus Recovery 절차와 레지스터 Read 방식 수정으로 카메라 통신 확보까지는 성공했으나, DCMI로 수신한 영상이 정상적인 해상도·비율로 들어오지 않아 PC 출력 화면이 실제 비율과 다르게 나타나는 문제가 남아 있습니다.
+
+<img src="images/ov7670_issue.jpg" alt="OV7670 해상도 및 비율 문제" width="360">
+
+*OV7670 해상도 & 비율 문제*
 
 - 향후 OV7670의 해상도 설정과 HSTART/HSTOP, 스케일링 관련 레지스터를 조정해 정상 비율 수신을 구현할 계획입니다.
 - 문제가 지속될 경우 다른 카메라 모듈로 변경할 예정입니다.
@@ -245,3 +260,5 @@ git clone https://github.com/heeyeon5877-tech/Lcd_RC_Car_With_STM32.git
 - 김소정
 - 오은지
 - 박희연
+
+GitHub: [Lcd_RC_Car_With_STM32](https://github.com/heeyeon5877-tech/Lcd_RC_Car_With_STM32)
