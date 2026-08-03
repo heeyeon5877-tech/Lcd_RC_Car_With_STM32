@@ -245,5 +245,3 @@ git clone https://github.com/heeyeon5877-tech/Lcd_RC_Car_With_STM32.git
 - 김소정
 - 오은지
 - 박희연
-
-GitHub: [Lcd_RC_Car_With_STM32](https://github.com/heeyeon5877-tech/Lcd_RC_Car_With_STM32)
